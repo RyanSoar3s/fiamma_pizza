@@ -39,7 +39,7 @@
 }
 
 :host {
-  @apply block fixed h-24 w-full z-50;
+  @apply block sticky top-0 h-24 w-full z-50;
 
 }
 
