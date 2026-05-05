@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { Responsive } from '@services/responsive';
 
 @Component({
@@ -15,6 +15,14 @@ export class Header {
 
   toggleMenu(): void {
     this.isOpenMenu.update((value) => !value);
+  }
+
+  @HostListener("window:resize")
+  onWindowResize(): void {
+    if (this.isOpenMenu()) {
+      this.isOpenMenu.set(false);
+
+    }
 
   }
 
