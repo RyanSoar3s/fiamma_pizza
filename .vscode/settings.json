@@ -1,0 +1,16 @@
+{
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.experimental.configFile": "src/styles.css",
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.suggestions": true,
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html",
+    "angular": "html",
+    "angular-html": "html"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
+}
