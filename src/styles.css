@@ -9,6 +9,7 @@
   --bg-body: #0a0a0a;
   --accent: #d32f2f;
   --text-secondary: #a0a0a0;
+  --bg-card: #161616;
 
 }
 
@@ -23,7 +24,7 @@
 }
 
 html, body {
-  @apply bg-(--bg-body) h-dvh w-dvw font-roboto;
+  @apply bg-(--bg-body) h-dvh w-dvw font-roboto overflow-x-hidden;
 
 }
 
