@@ -6,6 +6,6 @@
 }
 
 :host {
-  @apply relative top-24 flex flex-col items-center justify-center gap-2.5 h-162.5 w-full bg-image;
+  @apply relative flex flex-col items-center justify-center gap-2.5 h-162.5 w-full bg-image;
 
 }
