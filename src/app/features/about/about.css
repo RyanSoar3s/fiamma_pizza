@@ -1,0 +1,11 @@
+@reference "tailwindcss";
+
+@utility bg-image {
+  @apply bg-[linear-gradient(#000000b3,#000000b3),url(https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200)] bg-fixed bg-center bg-cover bg-no-repeat;
+
+}
+
+:host {
+  @apply relative top-24 flex flex-col items-center justify-center gap-2.5 h-162.5 w-full bg-image;
+
+}
