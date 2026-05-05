@@ -39,7 +39,7 @@
 }
 
 :host {
-  @apply block h-24 w-full;
+  @apply block fixed h-24 w-full z-50;
 
 }
 
