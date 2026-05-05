@@ -15,7 +15,8 @@
     "target": "ES2022",
     "module": "preserve",
     "paths": {
-      "@services/*": [ "./src/app/core/services/*" ]
+      "@services/*": [ "./src/app/core/services/*" ],
+      "@mocks/*": [ "./src/app/mocks/*" ]
 
     }
   },
