@@ -1,0 +1,98 @@
+@let options = [ "Início", "Pizzas", "Bebidas", "Sobremesas" ];
+
+@let XL = responsive.isXl();
+@let LG = responsive.isLg();
+
+<header>
+  <h1 [class]="'font-(family-name:--font-bn) text-(--accent) text-[1.8rem] tracking-[5px]'">fiamma pizza</h1>
+
+  @if (XL || LG) {
+    <nav [class]="'flex'">
+    <ul [class]="'flex gap-5'">
+      @for (opt of options; track $index) {
+        <li [class]="'text-white hover:text-(--accent) duration-300 font-normal cursor-pointer'">{{ opt }}</li>
+
+      }
+
+    </ul>
+
+  </nav>
+
+  <div [class]="'flex'">
+    <div [class]="'relative text-[1.5rem]'">
+      <span [class]="'cursor-pointer'">🛒</span>
+
+      <div [class]="'header__amount'">
+        <span>
+          {{ amount() }}
+
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  }
+
+
+  @if (!XL && !LG) {
+    <button
+      type="button"
+      [class]="'cursor-pointer'"
+      aria-label="Abrir menu"
+      (click)="void toggleMenu()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#e3e3e3"><path d="M120-240v-66.67h720V-240H120Zm0-206.67v-66.66h720v66.66H120Zm0-206.66V-720h720v66.67H120Z"/></svg>
+
+    </button>
+
+  }
+
+</header>
+
+@if (isOpenMenu()) {
+  <div [class]="'menu'" animate.enter="menu-open" animate.leave="menu-close">
+    <nav [class]="'flex'">
+      <ul [class]="'flex gap-5'">
+        @for (opt of options; track $index) {
+          <li
+            [class]="'text-white hover:text-(--accent) active:text-(--accent) duration-300 font-normal cursor-pointer'"
+            (click)="void toggleMenu()"
+
+          >
+            {{ opt }}
+
+          </li>
+
+        }
+
+      </ul>
+
+    </nav>
+
+    <div [class]="'flex'">
+      <div [class]="'relative text-[1.5rem]'">
+        <span [class]="'cursor-pointer'">🛒</span>
+
+        <div [class]="'header__amount'">
+          <span>
+            @if (amount() <= 99) {
+              {{ amount() }}
+
+            }
+
+            @else { +99 }
+
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}
