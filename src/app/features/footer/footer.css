@@ -1,0 +1,7 @@
+@reference "tailwindcss";
+
+:host {
+  @apply bg-black text-white flex flex-col items-center justify-evenly h-auto w-full p-[50px_0px]! border-t-2 border-(--accent);
+
+}
+
