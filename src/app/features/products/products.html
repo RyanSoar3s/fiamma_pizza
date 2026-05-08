@@ -1,10 +1,10 @@
-@for (prod of products; track $index) {
+@for (prod of products(); track $index) {
   <h2 [class]="'text-[2.2em] border-l-6 border-l-(--accent) pl-3.75! mt-5! mb-12! uppercase'">{{ prod.title }}</h2>
 
   <div [class]="'items'">
     @for (item of prod.items; track $index) {
       <div [class]="'items__card'">
-        <img [class]="'rounded-t-xl'" src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500" alt="">
+        <img [class]="'rounded-t-xl'" [src]="item.imageUrl" [alt]="item.name">
         <div [class]="'w-full p-[20px_0px_20px_25px]!'">
           <h3 [class]="'text-[1.3rem] font-semibold mb-2!'">{{ item.name }}</h3>
           <p [class]="'text-(--text-secondary) text-[0.95rem] mb-6! grow'">{{ item.desc }}</p>

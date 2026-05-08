@@ -1,5 +1,7 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { ProductCategory } from '@models/products.model';
+import { Api } from '@services/api';
 
 @Component({
   selector: 'app-products',
@@ -11,71 +13,17 @@ import { Component } from '@angular/core';
   templateUrl: './products.html',
   styleUrl: './products.css'
 })
-export class Products {
-  products: Array<{
-    title: string,
-    items: Array<{
-      name: string,
-      desc: string,
-      price: number
+export class Products implements OnInit {
+  private readonly api = inject(Api);
 
-    }>
+  protected products: WritableSignal<ProductCategory[]> = signal([]);
 
-  }> = [
-    {
-      title: "title1",
-      items: [
-        {
-          name: "prod1",
-          desc: "texto de puro exemplo.",
-          price: 20.00
+  ngOnInit(): void {
+    this.api.getMenu().subscribe((menu) => {
+      this.products.set(menu);
 
-        },
-        {
-          name: "prod1",
-          desc: "texto de puro exemplo.",
-          price: 20.00
+    });
 
-        },
-        {
-          name: "prod1",
-          desc: "texto de puro exemplo.",
-          price: 20.00
-
-        }
-,
-        {
-          name: "prod1",
-          desc: "texto de puro exemplo.",
-          price: 20.00
-
-        }
-,
-        {
-          name: "prod1",
-          desc: "texto de puro exemplo.",
-          price: 20.00
-
-        }
-
-
-      ]
-
-    },
-    {
-      title: "title1",
-      items: [
-        {
-          name: "prod1",
-          desc: "texto de puro exemplo.",
-          price: 20.00
-
-        }
-
-      ]
-
-    }
-
-  ];
+  }
 
 }
