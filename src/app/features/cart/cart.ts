@@ -88,8 +88,8 @@ export class Cart {
 
           }
 
-          this.checkoutMessage.set('Redirecionando para o Mercado Pago...');
-          window.location.href = redirectUrl;
+          this.checkoutMessage.set('Abrindo pagamento em uma nova aba...');
+          window.open(redirectUrl, '_blank', 'noopener,noreferrer');
 
         },
         error: (error: HttpErrorResponse) => {
