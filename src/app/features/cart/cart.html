@@ -1,0 +1,108 @@
+<main [class]="'cart'">
+  <a routerLink="/" [class]="'inline-flex items-center gap-2 no-underline text-(--text-secondary) mb-5! transition-colors duration-300 hover:text-white'">← Voltar ao inicio</a>
+  <h1 [class]="'text-[2.2rem] mb-10! border-l-6 border-l-(--accent) pl-3.75! uppercase'">Seu Carrinho</h1>
+
+  <div [class]="'cart__container'">
+    <div [class]="'cart__items'">
+      @if (!hasItems()) {
+        <article [class]="'cart__item'">
+          <p [class]="'text-(--text-secondary)'">Seu carrinho está vazio no momento.</p>
+
+        </article>
+
+      }
+
+      @for (item of cartStore.items(); track item.id) {
+        <article [class]="'cart__item'">
+          <img [src]="item.imageUrl" [alt]="item.title">
+
+          <div [class]="'grow'">
+            <h3 [class]="'text-[1.2rem] mb-1!'">{{ item.title }}</h3>
+            <p [class]="'text-(--text-secondary) text-[0.9rem] mb-2!'">{{ item.description }}</p>
+            <span [class]="'text-(--accent) font-bold text-[1.1rem]'">{{ item.unitPrice | currency:'BRL':'symbol':'1.2-2' }}</span>
+
+          </div>
+
+          <div [class]="'cart__actions'">
+            <div [class]="'cart__quantity'">
+              <button type="button" [class]="'cart__quantity-btn'" (click)="decreaseQuantity(item.id, item.quantity)">-</button>
+              <span [class]="'cart__quantity-value'">{{ item.quantity }}</span>
+              <button type="button" [class]="'cart__quantity-btn'" (click)="increaseQuantity(item.id, item.quantity)">+</button>
+
+            </div>
+
+            <button type="button" [class]="'cart__remove-btn'" (click)="removeItem(item.id)">Remover</button>
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+
+    <aside [class]="'cart__summary'">
+      <section [class]="'border-b border-[#222] pb-6! mb-6!'">
+        <h2 [class]="'text-[1.2rem] mb-4! uppercase tracking-[1px] text-(--accent)'">Entrega</h2>
+        <p [class]="'text-(--text-secondary) text-[0.9rem]'">Os dados de entrega e pagamento serao solicitados no fluxo do Mercado Pago.</p>
+      </section>
+
+      <section [class]="'border-none p-0! m-0!'">
+        <h2 [class]="'text-[1.2rem] mb-4! uppercase tracking-[1px] text-(--accent)'">Resumo do Pedido</h2>
+
+        <div [class]="'flex justify-between mb-3 text-[0.95rem]'">
+          <span>Subtotal</span>
+          <span>{{ subtotal() | currency:'BRL':'symbol':'1.2-2' }}</span>
+        </div>
+
+        <div [class]="'flex justify-between mb-3 text-[0.95rem]'">
+          <span>Taxa de entrega</span>
+          <span>{{ deliveryFee() | currency:'BRL':'symbol':'1.2-2' }}</span>
+        </div>
+
+        <div [class]="'text-[1.3rem] font-bold text-white border-t border-dashed border-[#333] pt-4! mt-4! flex justify-between mb-3'">
+          <span>Total</span>
+          <span [class]="'text-(--accent)'">{{ total() | currency:'BRL':'symbol':'1.2-2' }}</span>
+        </div>
+
+        @if (externalReference()) {
+          <p [class]="'text-[0.8rem] text-(--text-secondary) mt-3! mb-2!'">
+            Pedido: {{ externalReference() }}
+          </p>
+        }
+
+        @if (checkoutError()) {
+          <p [class]="'text-[#ff6b6b] text-[0.85rem] mt-3! mb-1!'">{{ checkoutError() }}</p>
+        }
+
+        @if (checkoutMessage()) {
+          <p [class]="'text-[#8ee28e] text-[0.85rem] mt-3! mb-1!'">{{ checkoutMessage() }}</p>
+        }
+
+        @if (paymentStatus(); as status) {
+          <p [class]="'text-[0.85rem] text-(--text-secondary) mt-2! mb-1!'">
+            Status: {{ status.found ? (status.payment?.status ?? 'desconhecido') : 'nao encontrado' }}
+          </p>
+        }
+
+        <button
+          type="button"
+          [class]="'cart__checkout-btn'"
+          (click)="createPaymentPreference()"
+          [disabled]="isSubmitting() || !hasItems()"
+        >
+          {{ isSubmitting() ? 'Processando...' : 'Finalizar Pedido' }}
+        </button>
+        <button
+          type="button"
+          [class]="'cart__checkout-btn mt-2! bg-[#2c2c2c] hover:bg-[#3a3a3a] active:bg-[#3a3a3a]'"
+          (click)="checkPaymentStatus()"
+          [disabled]="isCheckingStatus() || !externalReference()"
+        >
+          {{ isCheckingStatus() ? 'Consultando...' : 'Consultar Status do Pagamento' }}
+        </button>
+        <a routerLink="/" [class]="'cart__back-link'">Voltar ao cardapio</a>
+      </section>
+    </aside>
+  </div>
+</main>

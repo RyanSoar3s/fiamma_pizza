@@ -1,0 +1,117 @@
+@reference "tailwindcss";
+
+:host {
+  @apply flex w-full justify-center p-[70px_5%] text-white;
+
+}
+
+.cart {
+  @apply w-full max-w-300;
+
+}
+
+.cart__container {
+  @apply grid grid-cols-[1fr_380px] gap-10 items-start;
+
+}
+
+.cart__items {
+  @apply flex flex-col gap-5;
+
+}
+
+.cart__item {
+  @apply bg-(--bg-card) rounded-xl border border-[#222] p-6 flex items-center gap-5 transition-colors duration-300 hover:border-(--accent);
+
+}
+
+.cart__item img {
+  @apply w-25 h-25 object-cover rounded-lg;
+
+}
+
+.cart__actions {
+  @apply flex flex-col items-end gap-4;
+
+}
+
+.cart__quantity {
+  @apply flex items-center bg-[#222] rounded-[5px] overflow-hidden;
+
+}
+
+.cart__quantity-btn {
+  @apply bg-transparent border-none text-white p-[8px_14px] cursor-pointer text-base transition-colors duration-200 hover:bg-[#333];
+
+}
+
+.cart__quantity-value {
+  @apply p-[0_10px] font-bold min-w-[30px] text-center;
+
+}
+
+.cart__remove-btn {
+  @apply bg-transparent border-none text-(--text-secondary) cursor-pointer text-[0.85rem] uppercase tracking-[1px] transition-colors duration-200 hover:text-(--accent);
+
+}
+
+.cart__summary {
+  @apply bg-(--bg-card) rounded-xl border border-[#222] p-8 sticky top-27.5;
+
+}
+
+.cart__checkout-btn {
+  @apply w-full p-[14px] bg-(--accent) border-none text-white font-bold rounded-[5px] cursor-pointer uppercase text-base tracking-[1px] mt-4! transition-colors duration-300 hover:bg-[#b71c1c] active:bg-[#b71c1c];
+
+}
+
+.cart__back-link {
+  @apply block text-center text-(--text-secondary) no-underline text-[0.9rem] mt-4! transition-colors duration-300 hover:text-white;
+
+}
+
+@media (max-width: 968px) {
+  .cart__container {
+    @apply grid-cols-1;
+
+  }
+
+  .cart__summary {
+    @apply static;
+
+  }
+
+}
+
+@media (max-width: 768px) {
+  :host {
+    @apply p-[40px_5%];
+
+  }
+
+  .cart__item {
+    @apply flex-col items-start text-center;
+
+  }
+
+  .cart__item img {
+    @apply w-full h-37.5;
+
+  }
+
+  .cart__actions {
+    @apply w-full items-center;
+
+  }
+
+  .cart__quantity {
+    @apply w-full justify-between;
+
+  }
+
+  .cart__quantity-btn {
+    @apply grow;
+
+  }
+
+}
