@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
 
 import { Header } from './header';
 import { Responsive } from '@services/responsive';
@@ -13,6 +14,7 @@ describe('Header', () => {
     await TestBed.configureTestingModule({
       imports: [ Header ],
       providers: [
+        provideRouter([]),
         {
           provide: Responsive,
           useClass: ResponsiveMock
