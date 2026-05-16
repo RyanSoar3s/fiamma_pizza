@@ -16,7 +16,7 @@
 }
 
 .items__card {
-  @apply card-hover bg-(--bg-card) flex flex-col items-center justify-center max-w-100 border border-[#222] rounded-xl cursor-pointer transition-all duration-300;
+  @apply card-hover bg-(--bg-card) flex flex-col items-center justify-between h-125 max-w-100 border border-[#222] rounded-xl cursor-pointer transition-all duration-300;
 
 }
 
