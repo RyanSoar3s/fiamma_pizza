@@ -14,7 +14,7 @@
           <h3 [class]="'text-[1.3rem] font-semibold mb-2!'">{{ item.name }}</h3>
           <p [class]="'text-(--text-secondary) text-[0.95rem] mb-6! grow'">{{ item.desc }}</p>
           <p [class]="'text-(--accent) text-[1.4rem] font-bold mb-4!'">{{ item.price | currency:'BRL':'symbol':'1.2-2' }}</p>
-          <button [class]="'items__btn'">adicionar</button>
+          <button type="button" [class]="'items__btn'" (click)="addToCart(item)">adicionar</button>
 
         </div>
 

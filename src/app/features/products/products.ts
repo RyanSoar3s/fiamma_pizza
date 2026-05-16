@@ -1,7 +1,8 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { ProductCategory } from '@models/products.model';
+import { ProductCategory, ProductItem } from '@models/products.model';
 import { Api } from '@services/api';
+import { Cart } from '@services/cart';
 
 @Component({
   selector: 'app-products',
@@ -16,6 +17,7 @@ import { Api } from '@services/api';
 })
 export class Products implements OnInit {
   private readonly api = inject(Api);
+  private readonly cart = inject(Cart);
 
   protected products: WritableSignal<ProductCategory[]> = signal([]);
 
@@ -41,6 +43,24 @@ export class Products implements OnInit {
             (index === 1) ? 'bebidas' :
               (index === 2) ? 'sobremesas' : null;
 
+  }
+
+  addToCart(item: ProductItem): void {
+    const normalizedId = item.name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    this.cart.addItem({
+      id: normalizedId || crypto.randomUUID(),
+      title: item.name,
+      description: item.desc,
+      unitPrice: item.price,
+      imageUrl: item.imageUrl,
+      currencyId: 'BRL'
+    });
   }
 
 }
