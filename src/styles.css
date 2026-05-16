@@ -28,6 +28,16 @@ html, body {
 
 }
 
+html {
+  @apply scroll-smooth
+
+}
+
+section[id], h2[id] {
+  @apply scroll-mt-27.5;
+  
+}
+
 li {
   @apply list-none
 
