@@ -1,14 +1,19 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Cart } from '@services/cart';
 import { Responsive } from '@services/responsive';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [
+    RouterLink
+  ],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header {
-  protected amount = signal(0);
+  protected readonly cart = inject(Cart);
+  protected readonly amount = this.cart.totalItems;
   protected options = [
     { label: 'Início', target: 'inicio' },
     { label: 'Pizzas', target: 'pizzas' },
