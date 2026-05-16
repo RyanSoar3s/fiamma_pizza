@@ -1,5 +1,3 @@
-@let options = [ "Início", "Pizzas", "Bebidas", "Sobremesas" ];
-
 @let XL = responsive.isXl();
 @let LG = responsive.isLg();
 
@@ -10,7 +8,9 @@
     <nav [class]="'flex'">
     <ul [class]="'flex gap-5'">
       @for (opt of options; track $index) {
-        <li [class]="'text-white hover:text-(--accent) duration-300 font-normal cursor-pointer'">{{ opt }}</li>
+        <li [class]="'text-white hover:text-(--accent) duration-300 font-normal cursor-pointer'">
+          <button type="button" (click)="void scrollToSection(opt.target)">{{ opt.label }}</button>
+        </li>
 
       }
 
@@ -59,10 +59,8 @@
         @for (opt of options; track $index) {
           <li
             [class]="'text-white hover:text-(--accent) active:text-(--accent) duration-300 font-normal cursor-pointer'"
-            (click)="void toggleMenu()"
-
           >
-            {{ opt }}
+            <button type="button" (click)="void scrollToSection(opt.target); void toggleMenu()">{{ opt.label }}</button>
 
           </li>
 
