@@ -21,6 +21,9 @@ export type CreatePaymentPreferenceResponse = {
 export type PaymentStatusResponse = {
   found: boolean;
   externalReference: string;
+  order?: {
+    status?: string;
+  };
   payment?: {
     id?: string;
     status?: string;
@@ -29,4 +32,19 @@ export type PaymentStatusResponse = {
     dateCreated?: string;
     dateApproved?: string;
   };
+};
+
+export type SavedOrder = {
+  externalReference: string;
+  payerEmail: string | null;
+  items: unknown;
+  status: string;
+  paymentId: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GetOrdersResponse = {
+  count: number;
+  orders: SavedOrder[];
 };
