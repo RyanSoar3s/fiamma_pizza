@@ -4,7 +4,8 @@ import { HealthResponse, ProductCategory } from '@models/products.model';
 import {
   CreatePaymentPreferencePayload,
   CreatePaymentPreferenceResponse,
-  PaymentStatusResponse
+  GetOrdersResponse,
+  PaymentStatusResponse,
 } from '@models/payments.model';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
@@ -33,6 +34,11 @@ export class Api {
 
   getPaymentStatus(externalReference: string): Observable<PaymentStatusResponse> {
     return this.http.get<PaymentStatusResponse>(`${this.baseUrl}/api/payments/status/${encodeURIComponent(externalReference)}`);
+
+  }
+
+  getOrders(): Observable<GetOrdersResponse> {
+    return this.http.get<GetOrdersResponse>(`${this.baseUrl}/api/orders`);
 
   }
 }
