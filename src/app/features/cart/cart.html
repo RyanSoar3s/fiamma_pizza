@@ -103,6 +103,33 @@
         </button>
         <a routerLink="/" [class]="'cart__back-link'">Voltar ao cardapio</a>
       </section>
+
+      <section [class]="'cart__orders border-t border-[#222] pt-6! mt-6!'">
+        <div [class]="'flex items-center justify-between gap-2 mb-3!'">
+          <h2 [class]="'text-[1rem] uppercase tracking-[1px] text-(--accent) m-0!'">Pedidos Feitos</h2>
+          <button
+            type="button"
+            [class]="'cart__refresh-btn'"
+            (click)="loadOrders()"
+            [disabled]="isLoadingOrders()"
+          >
+            {{ isLoadingOrders() ? 'Atualizando...' : 'Atualizar' }}
+          </button>
+        </div>
+
+        @if (!finalizedOrders().length) {
+          <p [class]="'text-(--text-secondary) text-[0.85rem] m-0!'">Nenhum pedido finalizado ainda.</p>
+        }
+
+        @for (order of finalizedOrders(); track order.externalReference) {
+          <article [class]="'cart__order-item'">
+            <p [class]="'font-semibold text-[0.9rem] mb-1!'">{{ order.externalReference }}</p>
+            <p [class]="'text-(--text-secondary) text-[0.82rem] m-0!'">
+              Status: {{ order.status }}
+            </p>
+          </article>
+        }
+      </section>
     </aside>
   </div>
 </main>

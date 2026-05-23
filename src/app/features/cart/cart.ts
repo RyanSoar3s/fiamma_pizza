@@ -1,8 +1,8 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CreatePaymentPreferencePayload, PaymentStatusResponse } from '@models/payments.model';
+import { CreatePaymentPreferencePayload, GetOrdersResponse, PaymentStatusResponse, SavedOrder } from '@models/payments.model';
 import { Api } from '@services/api';
 import { Cart as CartStore } from '@services/cart';
 import { finalize } from 'rxjs';
@@ -17,7 +17,7 @@ import { finalize } from 'rxjs';
   templateUrl: './cart.html',
   styleUrl: './cart.css'
 })
-export class Cart {
+export class Cart implements OnInit {
   private readonly api = inject(Api);
   protected readonly cartStore = inject(CartStore);
 
@@ -27,11 +27,18 @@ export class Cart {
   protected readonly checkoutMessage = signal<string | null>(null);
   protected readonly checkoutError = signal<string | null>(null);
   protected readonly paymentStatus = signal<PaymentStatusResponse | null>(null);
+  protected readonly orders = signal<SavedOrder[]>([]);
+  protected readonly isLoadingOrders = signal(false);
 
   protected readonly subtotal = this.cartStore.subtotal;
   protected readonly total = computed(() => this.subtotal() + this.deliveryFee());
   protected readonly hasItems = computed(() => this.cartStore.items().length > 0);
   protected readonly externalReference = computed(() => this.cartStore.getExternalReference());
+  protected readonly finalizedOrders = computed(() => this.orders().filter((order) => this.isOrderFinalized(order.status)));
+
+  ngOnInit(): void {
+    this.loadOrders();
+  }
 
   increaseQuantity(itemId: string, currentQuantity: number): void {
     this.cartStore.updateQuantity(itemId, currentQuantity + 1);
@@ -56,7 +63,7 @@ export class Cart {
 
     }
 
-    const externalReference = this.cartStore.getExternalReference() ?? `pedido-${Date.now()}`;
+    const externalReference = `pedido-${Date.now()}`;
     this.cartStore.setExternalReference(externalReference);
 
     const payload: CreatePaymentPreferencePayload = {
@@ -75,12 +82,14 @@ export class Cart {
     this.isSubmitting.set(true);
     this.checkoutError.set(null);
     this.checkoutMessage.set(null);
+    this.paymentStatus.set(null);
 
     this.api.createPaymentPreference(payload)
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: (response) => {
           const redirectUrl = response.initPoint ?? response.sandboxInitPoint;
+          this.loadOrders();
 
           if (!redirectUrl) {
             this.checkoutError.set('Preferencia criada sem URL de pagamento. Tente novamente.');
@@ -117,6 +126,8 @@ export class Cart {
       .subscribe({
         next: (statusResponse) => {
           this.paymentStatus.set(statusResponse);
+          const movedToOrders = this.syncOrderAndCartStatus(statusResponse);
+          if (movedToOrders) return;
 
           if (!statusResponse.found) {
             this.checkoutMessage.set('Pagamento ainda não localizado. Tente novamente em instantes.');
@@ -127,6 +138,16 @@ export class Cart {
         error: (error: HttpErrorResponse) => {
           this.checkoutError.set(this.resolveApiError(error, 'Não foi possível consultar o status do pagamento.'));
         }
+      });
+  }
+
+  loadOrders(): void {
+    this.isLoadingOrders.set(true);
+    this.api.getOrders()
+      .pipe(finalize(() => this.isLoadingOrders.set(false)))
+      .subscribe({
+        next: (response) => this.orders.set(this.normalizeOrdersResponse(response)),
+        error: () => this.orders.set([])
       });
   }
 
@@ -156,6 +177,31 @@ export class Cart {
       default:
         return `Status atual: ${status ?? 'desconhecido'}.`;
     }
+  }
+
+  private syncOrderAndCartStatus(statusResponse: PaymentStatusResponse): boolean {
+    const orderStatus = statusResponse.order?.status;
+    const paymentStatus = statusResponse.payment?.status;
+    const isFinalized = this.isOrderFinalized(orderStatus) || paymentStatus === 'approved';
+
+    if (!isFinalized) return false;
+
+    this.checkoutMessage.set('Pedido finalizado e movido para a area de pedidos feitos.');
+    this.cartStore.clear();
+    this.cartStore.setExternalReference(null);
+    this.loadOrders();
+    return true;
+  }
+
+  private isOrderFinalized(status?: string): boolean {
+    if (typeof status !== 'string') return false;
+
+    const normalizedStatus = status.trim().toLowerCase();
+    return normalizedStatus === 'finalizado' || normalizedStatus === 'approved';
+  }
+
+  private normalizeOrdersResponse(response: GetOrdersResponse): SavedOrder[] {
+    return Array.isArray(response?.orders) ? response.orders : [];
   }
 
 }
