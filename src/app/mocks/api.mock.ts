@@ -16,4 +16,9 @@ export class ApiMock {
 
   }));
 
+  getOrders = vi.fn().mockReturnValue(of({
+    count: 0,
+    orders: []
+  }));
+
 }
