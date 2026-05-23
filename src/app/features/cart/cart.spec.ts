@@ -59,13 +59,14 @@ describe('Cart Component', () => {
     expect(openSpy).toHaveBeenCalledWith('https://example.com/checkout', '_blank', 'noopener,noreferrer');
   });
 
-  it('should set message when payment status is approved', () => {
+  it('should move order to completed area when payment status is approved', () => {
     cartStore.setExternalReference('pedido-1');
 
     component.checkPaymentStatus();
 
     expect(api.getPaymentStatus).toHaveBeenCalledWith('pedido-1');
-    expect(component['checkoutMessage']()).toContain('aprovado');
+    expect(component['checkoutMessage']()).toContain('movido');
+    expect(cartStore.items().length).toBe(0);
   });
 
   it('should expose API error message on payment failure', () => {
