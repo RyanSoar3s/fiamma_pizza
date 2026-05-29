@@ -6,10 +6,27 @@ export type PaymentPreferenceItem = {
   currency_id?: string;
 };
 
+export type CreatePaymentPreferenceItem = {
+  productId: number;
+  quantity: number;
+};
+
 export type CreatePaymentPreferencePayload = {
-  items: PaymentPreferenceItem[];
+  items: CreatePaymentPreferenceItem[];
   payerEmail?: string;
   externalReference?: string;
+};
+
+export type PaymentsSummaryRequest = {
+  items: CreatePaymentPreferenceItem[];
+};
+
+export type PaymentsSummaryResponse = {
+  items: Required<PaymentPreferenceItem>[];
+  fee: Required<PaymentPreferenceItem>;
+  subtotal: number;
+  total: number;
+  currencyId: string;
 };
 
 export type CreatePaymentPreferenceResponse = {
@@ -21,9 +38,6 @@ export type CreatePaymentPreferenceResponse = {
 export type PaymentStatusResponse = {
   found: boolean;
   externalReference: string;
-  order?: {
-    status?: string;
-  };
   payment?: {
     id?: string;
     status?: string;
@@ -31,6 +45,12 @@ export type PaymentStatusResponse = {
     transactionAmount?: number;
     dateCreated?: string;
     dateApproved?: string;
+  } | null;
+  storedOrder?: {
+    status?: string;
+    paymentId?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
   };
 };
 
