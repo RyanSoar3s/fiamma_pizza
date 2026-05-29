@@ -1,8 +1,8 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CreatePaymentPreferencePayload, GetOrdersResponse, PaymentStatusResponse, SavedOrder } from '@models/payments.model';
+import { CreatePaymentPreferencePayload, GetOrdersResponse, PaymentsSummaryRequest, PaymentsSummaryResponse, PaymentStatusResponse, SavedOrder } from '@models/payments.model';
 import { Api } from '@services/api';
 import { Cart as CartStore } from '@services/cart';
 import { finalize } from 'rxjs';
@@ -21,7 +21,10 @@ export class Cart implements OnInit {
   private readonly api = inject(Api);
   protected readonly cartStore = inject(CartStore);
 
-  protected readonly deliveryFee = signal(7);
+  private summaryRequestId = 0;
+
+  protected readonly paymentSummary = signal<PaymentsSummaryResponse | null>(null);
+  protected readonly isLoadingSummary = signal(false);
   protected readonly isSubmitting = signal(false);
   protected readonly isCheckingStatus = signal(false);
   protected readonly checkoutMessage = signal<string | null>(null);
@@ -30,11 +33,18 @@ export class Cart implements OnInit {
   protected readonly orders = signal<SavedOrder[]>([]);
   protected readonly isLoadingOrders = signal(false);
 
-  protected readonly subtotal = this.cartStore.subtotal;
-  protected readonly total = computed(() => this.subtotal() + this.deliveryFee());
+  protected readonly subtotal = computed(() => this.paymentSummary()?.subtotal ?? 0);
+  protected readonly serviceFee = computed(() => {
+    const fee = this.paymentSummary()?.fee;
+    return (fee) ? fee.unit_price * fee.quantity : null;
+  });
+  protected readonly total = computed(() => this.paymentSummary()?.total ?? 0);
   protected readonly hasItems = computed(() => this.cartStore.items().length > 0);
   protected readonly externalReference = computed(() => this.cartStore.getExternalReference());
   protected readonly finalizedOrders = computed(() => this.orders().filter((order) => this.isOrderFinalized(order.status)));
+  private readonly refreshSummary = effect(() => {
+    this.loadPaymentSummary(this.buildOrderItems());
+  });
 
   ngOnInit(): void {
     this.loadOrders();
@@ -63,18 +73,18 @@ export class Cart implements OnInit {
 
     }
 
+    if (!this.paymentSummary()) {
+      this.checkoutError.set('Aguarde o cálculo do resumo do pedido.');
+      this.checkoutMessage.set(null);
+      return;
+
+    }
+
     const externalReference = `pedido-${Date.now()}`;
     this.cartStore.setExternalReference(externalReference);
 
     const payload: CreatePaymentPreferencePayload = {
-      items: this.cartStore.items().map((item) => ({
-        id: item.id,
-        title: item.title,
-        quantity: item.quantity,
-        unit_price: item.unitPrice,
-        currency_id: item.currencyId
-
-      })),
+      items: this.buildOrderItems(),
       externalReference
 
     };
@@ -132,7 +142,7 @@ export class Cart implements OnInit {
           if (!statusResponse.found) {
             this.checkoutMessage.set('Pagamento ainda não localizado. Tente novamente em instantes.');
           } else {
-            this.checkoutMessage.set(this.resolvePaymentStatusMessage(statusResponse.payment?.status));
+            this.checkoutMessage.set(this.resolvePaymentStatusMessage(this.resolveCurrentStatus(statusResponse)));
           }
         },
         error: (error: HttpErrorResponse) => {
@@ -180,7 +190,7 @@ export class Cart implements OnInit {
   }
 
   private syncOrderAndCartStatus(statusResponse: PaymentStatusResponse): boolean {
-    const orderStatus = statusResponse.order?.status;
+    const orderStatus = statusResponse.storedOrder?.status;
     const paymentStatus = statusResponse.payment?.status;
     const isFinalized = this.isOrderFinalized(orderStatus) || paymentStatus === 'approved';
 
@@ -202,6 +212,49 @@ export class Cart implements OnInit {
 
   private normalizeOrdersResponse(response: GetOrdersResponse): SavedOrder[] {
     return Array.isArray(response?.orders) ? response.orders : [];
+  }
+
+  protected resolveCurrentStatus(statusResponse: PaymentStatusResponse): string | undefined {
+    return statusResponse.payment?.status ?? statusResponse.storedOrder?.status;
+  }
+
+  private buildOrderItems(): PaymentsSummaryRequest['items'] {
+    return this.cartStore.items().map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity
+
+    }));
+  }
+
+  private loadPaymentSummary(items: PaymentsSummaryRequest['items']): void {
+    const requestId = ++this.summaryRequestId;
+
+    if (!items.length) {
+      this.paymentSummary.set(null);
+      this.isLoadingSummary.set(false);
+      return;
+    }
+
+    this.isLoadingSummary.set(true);
+    this.api.getPaymentSummary({ items })
+      .pipe(finalize(() => {
+        if (requestId === this.summaryRequestId) {
+          this.isLoadingSummary.set(false);
+        }
+      }))
+      .subscribe({
+        next: (summary) => {
+          if (requestId === this.summaryRequestId) {
+            this.paymentSummary.set(summary);
+          }
+        },
+        error: () => {
+          if (requestId === this.summaryRequestId) {
+            this.paymentSummary.set(null);
+            this.checkoutError.set('Não foi possível calcular o resumo do pedido.');
+          }
+        }
+      });
   }
 
 }

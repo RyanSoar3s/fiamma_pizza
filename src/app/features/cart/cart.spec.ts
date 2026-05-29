@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { Cart as CartComponent } from './cart';
 import { Api } from '@services/api';
 import { Cart as CartStore } from '@services/cart';
 import { ApiMock } from '@mocks/api.mock';
+import { CreatePaymentPreferencePayload, PaymentsSummaryRequest } from '@models/payments.model';
 
 
 describe('Cart Component', () => {
@@ -36,6 +37,7 @@ describe('Cart Component', () => {
 
     cartStore.addItem({
       id: 'pizza',
+      productId: 1,
       title: 'Pizza',
       description: 'Desc',
       unitPrice: 50,
@@ -59,6 +61,19 @@ describe('Cart Component', () => {
     expect(openSpy).toHaveBeenCalledWith('https://example.com/checkout', '_blank', 'noopener,noreferrer');
   });
 
+  it('should use totals returned by payment summary', () => {
+    component.createPaymentPreference();
+
+    const payload = api.createPaymentPreference.mock.calls[0][0] as CreatePaymentPreferencePayload;
+    const summaryPayload = api.getPaymentSummary.mock.calls.at(-1)?.[0] as PaymentsSummaryRequest;
+
+    expect(payload.items).toEqual([{ productId: 1, quantity: 1 }]);
+    expect(summaryPayload.items).toEqual([{ productId: 1, quantity: 1 }]);
+    expect(component['subtotal']()).toBe(50);
+    expect(component['serviceFee']()).toBe(7);
+    expect(component['total']()).toBe(57);
+  });
+
   it('should move order to completed area when payment status is approved', () => {
     cartStore.setExternalReference('pedido-1');
 
@@ -67,6 +82,26 @@ describe('Cart Component', () => {
     expect(api.getPaymentStatus).toHaveBeenCalledWith('pedido-1');
     expect(component['checkoutMessage']()).toContain('movido');
     expect(cartStore.items().length).toBe(0);
+  });
+
+  it('should use stored order status when payment is not found in Mercado Pago', () => {
+    api.getPaymentStatus.mockReturnValue(of({
+      found: true,
+      externalReference: 'pedido-1',
+      payment: null,
+      storedOrder: {
+        status: 'pending',
+        paymentId: null,
+        createdAt: '2026-05-29T10:00:00.000Z',
+        updatedAt: '2026-05-29T10:00:00.000Z'
+      }
+    }));
+    cartStore.setExternalReference('pedido-1');
+
+    component.checkPaymentStatus();
+
+    expect(component['paymentStatus']()?.storedOrder?.status).toBe('pending');
+    expect(component['checkoutMessage']()).toBe('Pagamento pendente. Aguarde a confirmacao.');
   });
 
   it('should expose API error message on payment failure', () => {

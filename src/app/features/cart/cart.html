@@ -52,12 +52,26 @@
 
         <div [class]="'flex justify-between mb-3 text-[0.95rem]'">
           <span>Subtotal</span>
-          <span>{{ subtotal() | currency:'BRL':'symbol':'1.2-2' }}</span>
+          <span>
+            @if (isLoadingSummary()) {
+              Calculando...
+            } @else {
+              {{ subtotal() | currency:'BRL':'symbol':'1.2-2' }}
+            }
+          </span>
         </div>
 
         <div [class]="'flex justify-between mb-3 text-[0.95rem]'">
-          <span>Taxa de entrega</span>
-          <span>{{ deliveryFee() | currency:'BRL':'symbol':'1.2-2' }}</span>
+          <span>Taxa de serviço</span>
+          <span>
+            @if (isLoadingSummary()) {
+              Calculando...
+            } @else if (serviceFee() !== null) {
+              {{ serviceFee() | currency:'BRL':'symbol':'1.2-2' }}
+            } @else {
+              —
+            }
+          </span>
         </div>
 
         <div [class]="'text-[1.3rem] font-bold text-white border-t border-dashed border-[#333] pt-4! mt-4! flex justify-between mb-3'">
@@ -81,7 +95,7 @@
 
         @if (paymentStatus(); as status) {
           <p [class]="'text-[0.85rem] text-(--text-secondary) mt-2! mb-1!'">
-            Status: {{ status.found ? (status.payment?.status ?? 'desconhecido') : 'nao encontrado' }}
+            Status: {{ status.found ? (resolveCurrentStatus(status) ?? 'desconhecido') : 'nao encontrado' }}
           </p>
         }
 
@@ -89,7 +103,7 @@
           type="button"
           [class]="'cart__checkout-btn'"
           (click)="createPaymentPreference()"
-          [disabled]="isSubmitting() || !hasItems()"
+          [disabled]="isSubmitting() || isLoadingSummary() || !hasItems() || !paymentSummary()"
         >
           {{ isSubmitting() ? 'Processando...' : 'Finalizar Pedido' }}
         </button>
