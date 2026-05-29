@@ -5,6 +5,8 @@ import {
   CreatePaymentPreferencePayload,
   CreatePaymentPreferenceResponse,
   GetOrdersResponse,
+  PaymentsSummaryRequest,
+  PaymentsSummaryResponse,
   PaymentStatusResponse,
 } from '@models/payments.model';
 import { Observable } from 'rxjs';
@@ -29,6 +31,11 @@ export class Api {
 
   createPaymentPreference(payload: CreatePaymentPreferencePayload): Observable<CreatePaymentPreferenceResponse> {
     return this.http.post<CreatePaymentPreferenceResponse>(`${this.baseUrl}/api/payments/preference`, payload);
+
+  }
+
+  getPaymentSummary(payload: PaymentsSummaryRequest): Observable<PaymentsSummaryResponse> {
+    return this.http.post<PaymentsSummaryResponse>(`${this.baseUrl}/api/payments/summary`, payload);
 
   }
 
