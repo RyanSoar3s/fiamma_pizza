@@ -38,6 +38,7 @@ describe('Products', () => {
 
   it('should add selected product to cart', () => {
     component.addToCart({
+      id: 1,
       name: 'Margherita D.O.P',
       desc: 'Molho',
       price: 58,
@@ -45,6 +46,7 @@ describe('Products', () => {
     });
 
     expect(cart.items().length).toBe(1);
+    expect(cart.items()[0].productId).toBe(1);
     expect(cart.items()[0].title).toBe('Margherita D.O.P');
     expect(cart.totalItems()).toBe(1);
   });

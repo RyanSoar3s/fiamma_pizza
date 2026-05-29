@@ -55,6 +55,7 @@ export class Products implements OnInit {
 
     this.cart.addItem({
       id: normalizedId || crypto.randomUUID(),
+      productId: item.id,
       title: item.name,
       description: item.desc,
       unitPrice: item.price,
