@@ -82,6 +82,7 @@ export class Cart {
 
       return parsed.filter((item) =>
         typeof item.id === 'string' &&
+        typeof item.productId === 'number' &&
         typeof item.title === 'string' &&
         typeof item.description === 'string' &&
         typeof item.imageUrl === 'string' &&

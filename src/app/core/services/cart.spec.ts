@@ -18,6 +18,7 @@ describe('Cart Service', () => {
   it('should add items and aggregate quantity', () => {
     service.addItem({
       id: 'pizza-margherita',
+      productId: 1,
       title: 'Margherita',
       description: 'Desc',
       unitPrice: 58,
@@ -27,6 +28,7 @@ describe('Cart Service', () => {
 
     service.addItem({
       id: 'pizza-margherita',
+      productId: 1,
       title: 'Margherita',
       description: 'Desc',
       unitPrice: 58,
@@ -43,6 +45,7 @@ describe('Cart Service', () => {
   it('should update quantity and remove item when quantity is zero', () => {
     service.addItem({
       id: 'drink-ipa',
+      productId: 2,
       title: 'IPA',
       description: 'Desc',
       unitPrice: 22,
@@ -60,6 +63,7 @@ describe('Cart Service', () => {
   it('should persist cart items and external reference in localStorage', () => {
     service.addItem({
       id: 'dessert',
+      productId: 3,
       title: 'Tiramisu',
       description: 'Desc',
       unitPrice: 30,
