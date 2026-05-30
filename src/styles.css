@@ -10,6 +10,9 @@
   --accent: #d32f2f;
   --text-secondary: #a0a0a0;
   --bg-card: #161616;
+  --scrollbar-track: #0f0f0f;
+  --scrollbar-thumb: #d32f2f;
+  --scrollbar-thumb-hover: #b71c1c;
 
 }
 
@@ -19,7 +22,27 @@
 }
 
 * {
-  @apply m-0 p-0 box-border;
+  @apply [scrollbar-width:auto] [scrollbar-color:var(--scrollbar-thumb)_var(--scrollbar-track)] m-0 p-0 box-border;
+
+}
+
+*::-webkit-scrollbar {
+  @apply w-2.5 h-2.5;
+
+}
+
+*::-webkit-scrollbar-track {
+  @apply bg-(--scrollbar-track);
+
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply rounded-full border-2 border-(--scrollbar-track) bg-linear-to-b from-(--scrollbar-thumb) to-(--scrollbar-thumb-hover);
+
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply hover:bg-(--scrollbar-thumb-hover);
 
 }
 
@@ -35,7 +58,7 @@ html {
 
 section[id], h2[id] {
   @apply scroll-mt-27.5;
-  
+
 }
 
 li {
