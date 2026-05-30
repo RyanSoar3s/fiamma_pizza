@@ -41,8 +41,8 @@
 
 }
 
-*::-webkit-scrollbar-thumb {
-  @apply hover:bg-(--scrollbar-thumb-hover);
+*::-webkit-scrollbar-thumb:hover {
+  @apply bg-(--scrollbar-thumb-hover);
 
 }
 
