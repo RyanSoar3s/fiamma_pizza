@@ -1,0 +1,26 @@
+@reference "tailwindcss";
+
+@utility card-hover {
+  @apply hover:border-(--accent) hover:transform-[translateY(-10px)];
+
+}
+
+:host {
+  @apply flex flex-col items-center justify-evenly text-white min-h-full w-full p-[100px_0px];
+
+}
+
+.items {
+  @apply grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] justify-items-center gap-20 w-[70%] mb-20;
+
+}
+
+.items__card {
+  @apply card-hover bg-(--bg-card) flex flex-col items-center justify-between h-125 max-w-100 border border-[#222] rounded-xl cursor-pointer transition-all duration-300;
+
+}
+
+.items__btn {
+  @apply bg-(--accent) hover:bg-[#b71c1c] active:bg-[#b71c1c] w-[calc(100%-25px)] font-bold p-3! rounded-[5px] border-none uppercase cursor-pointer duration-300;
+
+}

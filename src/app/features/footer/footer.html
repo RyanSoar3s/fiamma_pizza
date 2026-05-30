@@ -1,0 +1,24 @@
+<div [class]="'grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-center max-w-300 w-[80%]'">
+  @for (info of footerInfo; track $index) {
+    <div [class]="'p-5!'">
+      <h4 [class]="'text-(--accent) font-semibold mb-6! uppercase'">{{ info.title }}</h4>
+
+      <ul>
+        @for (item of info.items; track $index) {
+          <li [class]="'text-(--text-secondary) text-[0.9rem] mb-[0.8rem]!'">{{ item }}</li>
+
+        }
+
+      </ul>
+
+    </div>
+
+  }
+
+</div>
+
+<div [class]="'w-full border-t border-[#111] mt-12! pt-8!'">
+  <p [class]="'text-[#444] text-[0.85rem] text-center'">© 2024 Pizzaria Fiamma - Tradição em cada fatia.</p>
+
+</div>
+

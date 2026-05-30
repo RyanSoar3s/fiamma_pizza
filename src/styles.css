@@ -1,3 +1,67 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 @import "tailwindcss";
+
+:root {
+  --font-bn: "Bebas Neue", sans-serif;
+
+  --bg-body: #0a0a0a;
+  --accent: #d32f2f;
+  --text-secondary: #a0a0a0;
+  --bg-card: #161616;
+  --scrollbar-track: #0f0f0f;
+  --scrollbar-thumb: #d32f2f;
+  --scrollbar-thumb-hover: #b71c1c;
+
+}
+
+@theme {
+  --font-roboto: "Roboto", sans-serif;
+
+}
+
+* {
+  @apply [scrollbar-width:auto] [scrollbar-color:var(--scrollbar-thumb)_var(--scrollbar-track)] m-0 p-0 box-border;
+
+}
+
+*::-webkit-scrollbar {
+  @apply w-2.5 h-2.5;
+
+}
+
+*::-webkit-scrollbar-track {
+  @apply bg-(--scrollbar-track);
+
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply rounded-full border-2 border-(--scrollbar-track) bg-linear-to-b from-(--scrollbar-thumb) to-(--scrollbar-thumb-hover);
+
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply hover:bg-(--scrollbar-thumb-hover);
+
+}
+
+html, body {
+  @apply bg-(--bg-body) h-dvh w-dvw font-roboto overflow-x-hidden;
+
+}
+
+html {
+  @apply scroll-smooth
+
+}
+
+section[id], h2[id] {
+  @apply scroll-mt-27.5;
+
+}
+
+li {
+  @apply list-none
+
+}

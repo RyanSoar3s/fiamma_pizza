@@ -1,0 +1,83 @@
+@reference "tailwindcss";
+
+@theme {
+  @keyframes open-menu {
+    from {
+      transform: translateY(-116px);
+
+    }
+    to {
+      transform: translateY(0px);
+
+    }
+
+  }
+
+  @keyframes close-menu {
+    from {
+      transform: translateY(0px);
+
+    }
+    to {
+      transform: translateY(-116px);
+
+    }
+
+  }
+
+}
+
+@utility openMenu {
+  @apply animate-[open-menu_0.5s_ease];
+
+
+}
+
+@utility closeMenu {
+ @apply animate-[close-menu_0.5s_ease];
+
+}
+
+:host {
+  @apply block sticky top-0 h-24 w-full z-50;
+
+}
+
+header {
+  @apply relative;
+
+}
+
+header, .menu {
+  @apply flex items-center justify-between bg-[#000000f2] h-24 w-full border-2 border-b-(--accent) p-[0px_50px] z-10;
+
+}
+
+nav button {
+  @apply bg-transparent border-none text-inherit cursor-pointer;
+}
+
+.header__amount {
+  @apply bg-(--accent) text-white text-[0.42em] absolute -top-1.5 -right-1.5 flex items-center justify-center h-5 w-5 rounded-full;
+
+}
+
+.menu {
+  @apply absolute flex-col-reverse h-28 p-4.5 z-0;
+
+  div {
+    @apply self-end;
+
+  }
+
+}
+
+.menu-open {
+  @apply openMenu;
+
+}
+
+.menu-close {
+  @apply closeMenu;
+
+}
