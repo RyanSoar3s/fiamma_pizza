@@ -41,6 +41,7 @@ export class Cart implements OnInit {
   protected readonly total = computed(() => this.paymentSummary()?.total ?? 0);
   protected readonly hasItems = computed(() => this.cartStore.items().length > 0);
   protected readonly externalReference = computed(() => this.cartStore.getExternalReference());
+  protected readonly preferenceExpiresAt = computed(() => this.cartStore.getPreferenceExpiresAt());
   protected readonly finalizedOrders = computed(() => this.orders().filter((order) => this.isOrderFinalized(order.status)));
   private readonly refreshSummary = effect(() => {
     this.loadPaymentSummary(this.buildOrderItems());
@@ -80,14 +81,15 @@ export class Cart implements OnInit {
 
     }
 
-    const externalReference = `pedido-${Date.now()}`;
-    this.cartStore.setExternalReference(externalReference);
+    const reusableExternalReference = this.getReusableExternalReference();
 
     const payload: CreatePaymentPreferencePayload = {
-      items: this.buildOrderItems(),
-      externalReference
-
+      items: this.buildOrderItems()
     };
+
+    if (reusableExternalReference) {
+      payload.externalReference = reusableExternalReference;
+    }
 
     this.isSubmitting.set(true);
     this.checkoutError.set(null);
@@ -99,6 +101,10 @@ export class Cart implements OnInit {
       .subscribe({
         next: (response) => {
           const redirectUrl = response.initPoint ?? response.sandboxInitPoint;
+          this.cartStore.setPaymentPreference(
+            response.externalReference,
+            this.normalizePreferenceExpiresAt(response.expiresAt)
+          );
           this.loadOrders();
 
           if (!redirectUrl) {
@@ -107,7 +113,9 @@ export class Cart implements OnInit {
 
           }
 
-          this.checkoutMessage.set('Abrindo pagamento em uma nova aba...');
+          this.checkoutMessage.set(
+            response.reused ? 'Reabrindo pagamento em uma nova aba...' : 'Abrindo pagamento em uma nova aba...'
+          );
           window.open(redirectUrl, '_blank', 'noopener,noreferrer');
 
         },
@@ -198,7 +206,7 @@ export class Cart implements OnInit {
 
     this.checkoutMessage.set('Pedido finalizado e movido para a area de pedidos feitos.');
     this.cartStore.clear();
-    this.cartStore.setExternalReference(null);
+    this.cartStore.clearPaymentPreference();
     this.loadOrders();
     return true;
   }
@@ -216,6 +224,23 @@ export class Cart implements OnInit {
 
   protected resolveCurrentStatus(statusResponse: PaymentStatusResponse): string | undefined {
     return statusResponse.payment?.status ?? statusResponse.storedOrder?.status;
+  }
+
+  private getReusableExternalReference(): string | null {
+    const externalReference = this.cartStore.getExternalReference();
+    if (!externalReference) return null;
+
+    const expiresAt = this.cartStore.getPreferenceExpiresAt();
+    if (!expiresAt) return null;
+
+    const expiresAtTime = new Date(expiresAt).getTime();
+    if (Number.isNaN(expiresAtTime)) return null;
+
+    return expiresAtTime > Date.now() ? externalReference : null;
+  }
+
+  private normalizePreferenceExpiresAt(expiresAt: Date | string): string {
+    return expiresAt instanceof Date ? expiresAt.toISOString() : expiresAt;
   }
 
   private buildOrderItems(): PaymentsSummaryRequest['items'] {

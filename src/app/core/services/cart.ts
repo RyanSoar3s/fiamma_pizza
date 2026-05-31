@@ -31,6 +31,7 @@ export class Cart {
 
     this.itemsSignal.set(next);
     this.persistItems(next);
+    this.clearPaymentPreference();
 
   }
 
@@ -38,6 +39,7 @@ export class Cart {
     const next = this.itemsSignal().filter((item) => item.id !== itemId);
     this.itemsSignal.set(next);
     this.persistItems(next);
+    this.clearPaymentPreference();
 
   }
 
@@ -51,6 +53,7 @@ export class Cart {
     const next = this.itemsSignal().map((item) => (item.id === itemId) ? { ...item, quantity } : item);
     this.itemsSignal.set(next);
     this.persistItems(next);
+    this.clearPaymentPreference();
 
   }
 
@@ -66,9 +69,30 @@ export class Cart {
   }
 
   setExternalReference(externalReference: string | null): void {
-    const next = { ...this.metaSignal(), externalReference };
+    const next = {
+      ...this.metaSignal(),
+      externalReference,
+      preferenceExpiresAt: externalReference ? this.metaSignal().preferenceExpiresAt : null
+    };
     this.metaSignal.set(next);
     this.persistMeta(next);
+
+  }
+
+  getPreferenceExpiresAt(): string | null {
+    return this.metaSignal().preferenceExpiresAt;
+
+  }
+
+  setPaymentPreference(externalReference: string | null, preferenceExpiresAt: string | null): void {
+    const next = { ...this.metaSignal(), externalReference, preferenceExpiresAt };
+    this.metaSignal.set(next);
+    this.persistMeta(next);
+
+  }
+
+  clearPaymentPreference(): void {
+    this.setPaymentPreference(null, null);
 
   }
 
@@ -103,19 +127,18 @@ export class Cart {
 
   private loadMeta(): CartMeta {
     const raw = localStorage.getItem(this.CART_META_STORAGE_KEY);
-    if (!raw) return { externalReference: null };
+    if (!raw) return { externalReference: null, preferenceExpiresAt: null };
 
     try {
       const parsed = JSON.parse(raw) as CartMeta;
-      if (typeof parsed.externalReference === 'string') {
-        return parsed;
-      }
-
-      return { externalReference: null };
+      return {
+        externalReference: typeof parsed.externalReference === 'string' ? parsed.externalReference : null,
+        preferenceExpiresAt: typeof parsed.preferenceExpiresAt === 'string' ? parsed.preferenceExpiresAt : null
+      };
 
     } catch {
 
-      return { externalReference: null };
+      return { externalReference: null, preferenceExpiresAt: null };
 
     }
   }

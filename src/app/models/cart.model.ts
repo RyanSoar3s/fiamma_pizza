@@ -11,4 +11,5 @@ export type CartItem = {
 
 export type CartMeta = {
   externalReference: string | null;
+  preferenceExpiresAt: string | null;
 };

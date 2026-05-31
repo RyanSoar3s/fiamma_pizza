@@ -30,9 +30,12 @@ export type PaymentsSummaryResponse = {
 };
 
 export type CreatePaymentPreferenceResponse = {
-  id?: string;
-  initPoint?: string;
-  sandboxInitPoint?: string;
+  id: string | undefined;
+  initPoint: string | undefined;
+  sandboxInitPoint: string | undefined | null;
+  externalReference: string;
+  expiresAt: Date | string;
+  reused: boolean;
 };
 
 export type PaymentStatusResponse = {

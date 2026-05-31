@@ -85,6 +85,12 @@
           </p>
         }
 
+        @if (preferenceExpiresAt()) {
+          <p [class]="'text-[0.8rem] text-(--text-secondary) mt-1! mb-2!'">
+            Link valido ate: {{ preferenceExpiresAt() | date:'shortTime' }}
+          </p>
+        }
+
         @if (checkoutError()) {
           <p [class]="'text-[#ff6b6b] text-[0.85rem] mt-3! mb-1!'">{{ checkoutError() }}</p>
         }

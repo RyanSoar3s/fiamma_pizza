@@ -5,7 +5,12 @@ export class ApiMock {
   getMenu = vi.fn().mockReturnValue(of([]));
 
   createPaymentPreference = vi.fn().mockReturnValue(of({
-    initPoint: 'https://example.com/checkout'
+    id: 'preference-1',
+    initPoint: 'https://example.com/checkout',
+    sandboxInitPoint: null,
+    externalReference: 'pedido-1',
+    expiresAt: '2026-05-31T10:10:00.000Z',
+    reused: false
 
   }));
 

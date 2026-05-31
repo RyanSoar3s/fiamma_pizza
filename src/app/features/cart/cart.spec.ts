@@ -58,6 +58,8 @@ describe('Cart Component', () => {
     component.createPaymentPreference();
 
     expect(api.createPaymentPreference).toHaveBeenCalled();
+    expect(cartStore.getExternalReference()).toBe('pedido-1');
+    expect(cartStore.getPreferenceExpiresAt()).toBe('2026-05-31T10:10:00.000Z');
     expect(openSpy).toHaveBeenCalledWith('https://example.com/checkout', '_blank', 'noopener,noreferrer');
   });
 
@@ -68,10 +70,29 @@ describe('Cart Component', () => {
     const summaryPayload = api.getPaymentSummary.mock.calls.at(-1)?.[0] as PaymentsSummaryRequest;
 
     expect(payload.items).toEqual([{ productId: 1, quantity: 1 }]);
+    expect(payload.externalReference).toBeUndefined();
     expect(summaryPayload.items).toEqual([{ productId: 1, quantity: 1 }]);
     expect(component['subtotal']()).toBe(50);
     expect(component['serviceFee']()).toBe(7);
     expect(component['total']()).toBe(57);
+  });
+
+  it('should reuse stored payment preference while it is valid', () => {
+    cartStore.setPaymentPreference('pedido-existente', '2099-05-31T10:10:00.000Z');
+
+    component.createPaymentPreference();
+
+    const payload = api.createPaymentPreference.mock.calls[0][0] as CreatePaymentPreferencePayload;
+    expect(payload.externalReference).toBe('pedido-existente');
+  });
+
+  it('should not reuse stored payment preference without expiration', () => {
+    cartStore.setExternalReference('pedido-antigo');
+
+    component.createPaymentPreference();
+
+    const payload = api.createPaymentPreference.mock.calls[0][0] as CreatePaymentPreferencePayload;
+    expect(payload.externalReference).toBeUndefined();
   });
 
   it('should move order to completed area when payment status is approved', () => {
