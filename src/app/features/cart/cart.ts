@@ -42,6 +42,7 @@ export class Cart implements OnInit {
   protected readonly hasItems = computed(() => this.cartStore.items().length > 0);
   protected readonly externalReference = computed(() => this.cartStore.getExternalReference());
   protected readonly preferenceExpiresAt = computed(() => this.cartStore.getPreferenceExpiresAt());
+  protected readonly preferenceExpiresInSeconds = computed(() => this.cartStore.getPreferenceExpiresInSeconds());
   protected readonly finalizedOrders = computed(() => this.orders().filter((order) => this.isOrderFinalized(order.status)));
   private readonly refreshSummary = effect(() => {
     this.loadPaymentSummary(this.buildOrderItems());
@@ -103,7 +104,8 @@ export class Cart implements OnInit {
           const redirectUrl = response.initPoint ?? response.sandboxInitPoint;
           this.cartStore.setPaymentPreference(
             response.externalReference,
-            this.normalizePreferenceExpiresAt(response.expiresAt)
+            this.normalizePreferenceExpiresAt(response.expiresAt),
+            response.expiresInSeconds
           );
           this.loadOrders();
 
@@ -120,6 +122,11 @@ export class Cart implements OnInit {
 
         },
         error: (error: HttpErrorResponse) => {
+          if (error.status === 409) {
+            this.handleAlreadyApprovedPreference();
+            return;
+          }
+
           this.checkoutError.set(this.resolveApiError(error, 'Não foi possível iniciar o pagamento.'));
 
         }
@@ -176,6 +183,14 @@ export class Cart implements OnInit {
     }
 
     return fallback;
+  }
+
+  private handleAlreadyApprovedPreference(): void {
+    this.checkoutError.set(null);
+    this.checkoutMessage.set('Pedido ja aprovado. Movemos ele para a area de pedidos feitos.');
+    this.cartStore.clear();
+    this.cartStore.clearPaymentPreference();
+    this.loadOrders();
   }
 
   private resolvePaymentStatusMessage(status?: string): string {

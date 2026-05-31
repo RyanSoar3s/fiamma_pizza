@@ -88,6 +88,9 @@
         @if (preferenceExpiresAt()) {
           <p [class]="'text-[0.8rem] text-(--text-secondary) mt-1! mb-2!'">
             Link valido ate: {{ preferenceExpiresAt() | date:'shortTime' }}
+            @if (preferenceExpiresInSeconds() !== null) {
+              ({{ preferenceExpiresInSeconds() }}s)
+            }
           </p>
         }
 

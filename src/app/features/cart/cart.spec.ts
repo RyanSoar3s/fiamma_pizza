@@ -60,6 +60,7 @@ describe('Cart Component', () => {
     expect(api.createPaymentPreference).toHaveBeenCalled();
     expect(cartStore.getExternalReference()).toBe('pedido-1');
     expect(cartStore.getPreferenceExpiresAt()).toBe('2026-05-31T10:10:00.000Z');
+    expect(cartStore.getPreferenceExpiresInSeconds()).toBe(600);
     expect(openSpy).toHaveBeenCalledWith('https://example.com/checkout', '_blank', 'noopener,noreferrer');
   });
 
@@ -78,7 +79,7 @@ describe('Cart Component', () => {
   });
 
   it('should reuse stored payment preference while it is valid', () => {
-    cartStore.setPaymentPreference('pedido-existente', '2099-05-31T10:10:00.000Z');
+    cartStore.setPaymentPreference('pedido-existente', '2099-05-31T10:10:00.000Z', 600);
 
     component.createPaymentPreference();
 
@@ -93,6 +94,21 @@ describe('Cart Component', () => {
 
     const payload = api.createPaymentPreference.mock.calls[0][0] as CreatePaymentPreferencePayload;
     expect(payload.externalReference).toBeUndefined();
+  });
+
+  it('should move approved preference conflict to completed state', () => {
+    cartStore.setPaymentPreference('pedido-aprovado', '2099-05-31T10:10:00.000Z', 600);
+    api.createPaymentPreference.mockReturnValue(
+      throwError(() => ({ status: 409, error: { error: 'Order already approved.' } }))
+    );
+
+    component.createPaymentPreference();
+
+    expect(component['checkoutMessage']()).toContain('Pedido ja aprovado');
+    expect(component['checkoutError']()).toBeNull();
+    expect(cartStore.items().length).toBe(0);
+    expect(cartStore.getExternalReference()).toBeNull();
+    expect(api.getOrders).toHaveBeenCalled();
   });
 
   it('should move order to completed area when payment status is approved', () => {

@@ -35,6 +35,7 @@ export type CreatePaymentPreferenceResponse = {
   sandboxInitPoint: string | undefined | null;
   externalReference: string;
   expiresAt: Date | string;
+  expiresInSeconds: number;
   reused: boolean;
 };
 

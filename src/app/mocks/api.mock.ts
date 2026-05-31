@@ -10,6 +10,7 @@ export class ApiMock {
     sandboxInitPoint: null,
     externalReference: 'pedido-1',
     expiresAt: '2026-05-31T10:10:00.000Z',
+    expiresInSeconds: 600,
     reused: false
 
   }));
