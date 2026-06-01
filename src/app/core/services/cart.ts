@@ -68,18 +68,6 @@ export class Cart {
 
   }
 
-  setExternalReference(externalReference: string | null): void {
-    const next = {
-      ...this.metaSignal(),
-      externalReference,
-      preferenceExpiresAt: externalReference ? this.metaSignal().preferenceExpiresAt : null,
-      preferenceExpiresInSeconds: externalReference ? this.metaSignal().preferenceExpiresInSeconds : null
-    };
-    this.metaSignal.set(next);
-    this.persistMeta(next);
-
-  }
-
   getPreferenceExpiresAt(): string | null {
     return this.metaSignal().preferenceExpiresAt;
 

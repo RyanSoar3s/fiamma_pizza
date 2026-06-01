@@ -88,7 +88,7 @@ describe('Cart Component', () => {
   });
 
   it('should not reuse stored payment preference without expiration', () => {
-    cartStore.setExternalReference('pedido-antigo');
+    cartStore.setPaymentPreference('pedido-antigo', null, null);
 
     component.createPaymentPreference();
 
@@ -112,7 +112,7 @@ describe('Cart Component', () => {
   });
 
   it('should move order to completed area when payment status is approved', () => {
-    cartStore.setExternalReference('pedido-1');
+    cartStore.setPaymentPreference('pedido-1', null, null);
 
     component.checkPaymentStatus();
 
@@ -133,7 +133,7 @@ describe('Cart Component', () => {
         updatedAt: '2026-05-29T10:00:00.000Z'
       }
     }));
-    cartStore.setExternalReference('pedido-1');
+    cartStore.setPaymentPreference('pedido-1', null, null);
 
     component.checkPaymentStatus();
 

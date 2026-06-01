@@ -70,7 +70,7 @@ describe('Cart Service', () => {
       imageUrl: 'http://image',
       currencyId: 'BRL'
     });
-    service.setExternalReference('pedido-123');
+    service.setPaymentPreference('pedido-123', '2026-05-31T10:10:00.000Z', 600);
 
     expect(localStorage.getItem(CART_STORAGE_KEY)).toContain('Tiramisu');
     expect(localStorage.getItem(CART_META_STORAGE_KEY)).toContain('pedido-123');
