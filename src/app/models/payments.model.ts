@@ -58,11 +58,21 @@ export type PaymentStatusResponse = {
   };
 };
 
+export type SavedOrderPreference = {
+  id: string | null;
+  initPoint: string | null;
+  sandboxInitPoint: string | null;
+  expiresAt: string | null;
+  expiresInSeconds: number;
+  expired: boolean;
+};
+
 export type SavedOrder = {
   externalReference: string;
   payerEmail: string | null;
-  items: unknown;
+  items: PaymentPreferenceItem[];
   status: string;
+  preference: SavedOrderPreference;
   paymentId: string | null;
   createdAt: string;
   updatedAt: string;
