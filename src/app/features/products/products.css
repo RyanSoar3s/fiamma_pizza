@@ -10,6 +10,16 @@
 
 }
 
+.products-loading {
+  @apply flex items-center gap-4 text-(--text-secondary) text-lg font-semibold min-h-75;
+
+}
+
+.products-loading__spinner {
+  @apply block size-10 rounded-full border-4 border-[#333] border-t-(--accent) animate-spin;
+
+}
+
 .items {
   @apply grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] justify-items-center gap-20 w-[70%] mb-20;
 

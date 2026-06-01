@@ -3,6 +3,7 @@ import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core
 import { ProductCategory, ProductItem } from '@models/products.model';
 import { Api } from '@services/api';
 import { Cart } from '@services/cart';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-products',
@@ -20,12 +21,15 @@ export class Products implements OnInit {
   private readonly cart = inject(Cart);
 
   protected products: WritableSignal<ProductCategory[]> = signal([]);
+  protected isLoading: WritableSignal<boolean> = signal(true);
 
   ngOnInit(): void {
-    this.api.getMenu().subscribe((menu) => {
-      this.products.set(menu);
+    this.api.getMenu()
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe((menu) => {
+        this.products.set(menu);
 
-    });
+      });
 
   }
   
